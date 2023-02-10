@@ -4,7 +4,26 @@
 from telnetlib import Telnet
 from time import sleep
 
+import sys
+import argparse
+     
+def createParser ():
+    parser = argparse.ArgumentParser()
+    parser.add_argument ('-m', '--mag', nargs='1')
+    parser.add_argument ('-a', '--adduser', nargs='1?')
+    parser.add_argument ('-p', '--pass', default='1?')
+    parser.add_argument ('-r', '--rights', nargs='1?', default='user')
+    return parser
+     
+if __name__ == '__main__':
+    parser = createParser()
+    namespace = parser.parse_args(sys.argv[1:])
+    print (namespace)
+    print ("Привет, {}!".format (namespace.name) )
 
+
+
+exit()
 user = 'admin'
 password = '123'
 timeout = 5
