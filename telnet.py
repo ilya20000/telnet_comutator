@@ -6,7 +6,7 @@ from time import sleep
 
 
 user = 'admin'
-password = 'R0vvenfnjh'
+password = '123'
 timeout = 5
 
 
