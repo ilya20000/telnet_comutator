@@ -6,7 +6,7 @@ from time import sleep
 
 import sys
 import argparse
-
+import getZabbixHost
 
 
 
@@ -66,7 +66,6 @@ def addUser(tn, arguments):
     tn.write(b"logout\n")
     sleep(1)
     #print(str(tn.read_very_eager(), 'utf-8'))
-    tn.close()
 
 
 def deluser(tn, arguments):
@@ -74,14 +73,14 @@ def deluser(tn, arguments):
 
 def getMagComutators(mag):
     print("Получаем список ip комутаторов на магазине №"+ mag)
-    return ['10.2.2.4']
+    return getZabbixHost.getHosts(mag)
 
 
 
 if __name__ == '__main__':
     parser = createParser()
     arguments = parser.parse_args(sys.argv[1:])
-    
+
     listComutators = getMagComutators(arguments.mag)
     for ipComutator in listComutators:
         
@@ -93,4 +92,5 @@ if __name__ == '__main__':
             addUser(tn, arguments)
         elif arguments.deluser != None :
             deluser(tn, arguments)
+        tn.close()
     exit()
