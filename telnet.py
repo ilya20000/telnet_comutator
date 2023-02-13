@@ -23,7 +23,7 @@ def createParser ():
 
 def connectComutator(ipComutator):
     user = 'admin'
-    password = 'R0vvenfnjh'
+    password = '-'
     timeout = 5
     try:
         tn = Telnet(ipComutator, 23, timeout)
