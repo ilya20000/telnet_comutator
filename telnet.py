@@ -20,32 +20,29 @@ def createParser ():
     parser.add_argument ('-r', '--rights', nargs='?')
     return parser
 
+
 def connectComutator(ipComutator):
     user = 'admin'
     password = 'R0vvenfnjh'
     timeout = 5
-
     try:
         tn = Telnet(ipComutator, 23, timeout)
     except Exception as e:
         print("error: %s " % str(e))
         if str(e) == "timed out":
             print("connect via ssh")
-
     try:
         #tn.write(b"\n")
         print("Соединяемся с "+ipComutator)
         tn.read_until(b"UserName:",5)
         tn.write(user.encode('ascii') + b"\n")
-        sleep(2)
-        print(tn.read_very_eager())
+        #sleep(1)
         tn.read_until(b"PassWord:",5)
         tn.write(password.encode('ascii') + b"\n")
         tn.write(b"\n")
-        sleep(2)
-        print(tn.read_very_eager())
+        #sleep(1)
         tn.read_until(b"admin#",5)
-        print(tn.read_very_eager())
+        print(str(tn.read_very_eager(), 'utf-8'))
         return tn  
     except Exception as e:
         print("error: %s " % str(e))
@@ -55,42 +52,45 @@ def connectComutator(ipComutator):
 
 
 
-def doOperation(arguments):
+
+def addUser(tn, arguments):
+    #tn.write(b"show account\n")
+    #print(tn.read_very_eager())
+    #com = "create account "+ arguments.rights +" "+ arguments.adduser +" encrypt sha_1 "+ arguments.passw +"\n"
+    com = "create account "+ arguments.rights +" "+ arguments.adduser +" encrypt plain_text "+ arguments.passw +"\n"
+    tn.write( bytes(com, encoding='utf-8') )
+    sleep(1)
+    s = str(tn.read_very_eager(), 'utf-8')
+    if s.find('Success') == -1:
+        print(s)
+    tn.write(b"logout\n")
+    sleep(1)
+    #print(str(tn.read_very_eager(), 'utf-8'))
+    tn.close()
+
+
+def deluser(tn, arguments):
+    print("del")
+
+def getMagComutators(mag):
+    print("Получаем список ip комутаторов на магазине №"+ mag)
+    return ['10.2.2.4']
+
+
+
+if __name__ == '__main__':
+    parser = createParser()
+    arguments = parser.parse_args(sys.argv[1:])
+    
     listComutators = getMagComutators(arguments.mag)
     for ipComutator in listComutators:
         
         tn = connectComutator(ipComutator)
-        print(tn)
         if tn == False:
             exit()
 
         if arguments.adduser != None :
             addUser(tn, arguments)
         elif arguments.deluser != None :
-            return 'deluser'
-            
-
-
-
-def addUser(tn, arguments):
-    #tn.write(b"show account\n")
-    print(tn.read_very_eager())
-    com = "create account "+ arguments.rights +" "+ arguments.adduser +" encrypt sha_1 "+ arguments.passw +"\n"
-    tn.write( bytes(com, encoding='utf-8') )
-    sleep(2)
-    print(tn.read_very_eager())
-    tn.write(b"logout\n")
-    sleep(1)
-    print(tn.read_very_eager())
-    tn.close()
-
-def getMagComutators(mag):
-    print("Получаем список ip комутаторов на магазине №"+ mag)
-    return ['10.2.2.4']
-
-if __name__ == '__main__':
-    parser = createParser()
-    arguments = parser.parse_args(sys.argv[1:])
-    doOperation(arguments)
-    print ("Привет, {}!".format (arguments.mag) )
+            deluser(tn, arguments)
     exit()
