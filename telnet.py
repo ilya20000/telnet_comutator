@@ -6,7 +6,11 @@ from time import sleep
 
 import sys
 import argparse
-     
+
+
+
+
+
 def createParser ():
     parser = argparse.ArgumentParser()
     parser.add_argument ('-m', '--mag', nargs='?')
@@ -18,7 +22,7 @@ def createParser ():
 
 def connectComutator(ipComutator):
     user = 'admin'
-    password = '123'
+    password = 'R0vvenfnjh'
     timeout = 5
 
     try:
@@ -33,10 +37,12 @@ def connectComutator(ipComutator):
         print("Соединяемся с "+ipComutator)
         tn.read_until(b"UserName:",5)
         tn.write(user.encode('ascii') + b"\n")
+        sleep(2)
         print(tn.read_very_eager())
         tn.read_until(b"PassWord:",5)
         tn.write(password.encode('ascii') + b"\n")
         tn.write(b"\n")
+        sleep(2)
         print(tn.read_very_eager())
         tn.read_until(b"admin#",5)
         print(tn.read_very_eager())
@@ -53,8 +59,8 @@ def doOperation(arguments):
     listComutators = getMagComutators(arguments.mag)
     for ipComutator in listComutators:
         
-        print(ipComutator+"\n")
         tn = connectComutator(ipComutator)
+        print(tn)
         if tn == False:
             exit()
 
@@ -68,14 +74,14 @@ def doOperation(arguments):
 
 def addUser(tn, arguments):
     #tn.write(b"show account\n")
-    com = str("create account "+ arguments.rights +" "+ arguments.adduser +" encrypt sha_1 "+ arguments.passw +"\n")
-    tn.write( bytes(com, encoding='utf-8') )
     print(tn.read_very_eager())
+    com = "create account "+ arguments.rights +" "+ arguments.adduser +" encrypt sha_1 "+ arguments.passw +"\n"
+    tn.write( bytes(com, encoding='utf-8') )
     sleep(2)
-    #print(tn.read_very_eager())
+    print(tn.read_very_eager())
     tn.write(b"logout\n")
     sleep(1)
-    #print(tn.read_very_eager())
+    print(tn.read_very_eager())
     tn.close()
 
 def getMagComutators(mag):
